@@ -12,7 +12,8 @@ class SVM(object):
         self.l_svm = LinearSVC()
         self.experiment = os.path.join('checkpoints', 'SVM')
         if not os.path.isfile(self.checkpoint_path):
-            print("Invalid checkpoints. Check your checkpoint_path or retrain model")
+            print("Invalid checkpoints. Check your checkpoint_path if you're in inference phase or retrain model if "
+                  "you're in training phase ")
             if not yes_or_no("Do you want to retrain SVM model"):
                 exit()
         else:
@@ -31,6 +32,9 @@ class SVM(object):
         return accuracy_score(test_labels, pred), classification_report(test_labels, pred)
 
     def inference(self, features: list):
+        if not os.path.isfile(self.checkpoint_path):
+            print("Invalid checkpoints. Check your checkpoint_path")
+            exit()
         pred = self.l_svm.predict(features)
         y_margins = self.l_svm.decision_function(features)
         confidences = sigmoid_v(y_margins)
